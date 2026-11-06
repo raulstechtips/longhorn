@@ -1,0 +1,16 @@
+{{- range .Values.recurringJobs }}
+---
+# Keep the source API version; live serves both v1beta1 and v1beta2.
+apiVersion: longhorn.io/v1beta1
+kind: RecurringJob
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "longhorn-wrapper.labels" $ | nindent 4 }}
+spec:
+  task: {{ .task }}
+  cron: {{ .cron | quote }}
+  retain: {{ .retain }}
+  concurrency: {{ .concurrency }}
+{{- end }}

@@ -1,0 +1,11 @@
+project-config:
+  project-name: longhorn
+  project-description: "Helm chart that installs Longhorn in the cluster"
+  project-namespace: longhorn-system
+  publish-targets: [ghcr]
+  pipeline-steps:
+    helm-test: true
+    trivy-scan: true
+    opengrep-scan: true
+    helm-package-upload: true
+    argo-deploy: true

@@ -1,0 +1,28 @@
+suite: Traefik route
+templates: [templates/ingressroute.yaml]
+tests:
+  - it: is off by default
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: routes to the upstream frontend
+    values: [../ci/all-on-values.yaml]
+    asserts:
+      - equal:
+          path: metadata.name
+          value: longhorn-ingress
+      - equal:
+          path: metadata.annotations["kubernetes.io/ingress.class"]
+          value: traefik-external
+      - equal:
+          path: spec.routes[0].match
+          value: Host(`longhorn.example.test`)
+      - equal:
+          path: spec.routes[0].services[0]
+          value: {name: longhorn-frontend, port: 80}
+      - equal:
+          path: spec.routes[0].middlewares
+          value: [{name: fake-headers, namespace: default}]
+      - equal:
+          path: spec.tls.secretName
+          value: fake-tls
