@@ -1,0 +1,71 @@
+# Environment values belong in cluster-config/apps/dev/longhorn.yaml.
+infisical:
+  authRef:
+    name: ""
+    namespace: ""
+  projectSlug: ""
+  environmentSlug: ""
+minioSecret:
+  enabled: false
+  secretName: minio-secret
+  secretPath: /minio/users/longhorn
+  recursive: true
+  refreshInterval: 60s
+  endpoint: ""
+ingressRoute:
+  enabled: false
+  entryPoints: [websecure]
+  ingressClass: traefik-external
+  middlewares: []
+  host: ""
+  tlsSecretName: ""
+# These policies are independent of the environment. Parameter strings must match live exactly.
+storageClasses:
+  - name: longhorn-default-storage-class
+    reclaimPolicy: Retain
+    parameters:
+      numberOfReplicas: "3"
+      staleReplicaTimeout: "1440"
+      volumeExpansion: "true"
+  - name: longhorn-storage-class-local
+    reclaimPolicy: Retain
+    parameters:
+      dataLocality: strict-local
+      numberOfReplicas: "1"
+      staleReplicaTimeout: "1440"
+      volumeExpansion: "true"
+  - name: longhorn-storage-class-replicas-1
+    reclaimPolicy: Retain
+    parameters:
+      numberOfReplicas: "1"
+      staleReplicaTimeout: "1440"
+      volumeExpansion: "true"
+  - name: longhorn-storage-class-replicas-1-delete
+    reclaimPolicy: Delete
+    parameters:
+      numberOfReplicas: "1"
+      staleReplicaTimeout: "1440"
+      volumeExpansion: "true"
+recurringJobs:
+  - name: cleanup-snapshots
+    task: snapshot-cleanup
+    cron: "0 3 * * *"
+    retain: 15
+    concurrency: 3
+volumeSnapshotClasses:
+  - name: longhorn-volume-snapshot-class
+    isDefault: true
+    deletionPolicy: Delete
+# Bucket URLs are environment-specific.
+backupTargets: []
+# Only deviations from upstream 1.8.2 defaults.
+longhorn:
+  defaultSettings:
+    # Remove orphaned data and keep the current log level.
+    orphanAutoDeletion: true
+    logLevel: info
+  longhornUI:
+    replicas: 1
+  longhornManager:
+    log:
+      format: json

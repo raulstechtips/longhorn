@@ -1,0 +1,19 @@
+{{- range .Values.backupTargets }}
+---
+apiVersion: longhorn.io/v1beta2
+kind: BackupTarget
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "longhorn-wrapper.labels" $ | nindent 4 }}
+spec:
+  # MinIO tenant-s3, bucket `longhorn-backup`.
+  # MinIO has no region configured, so it reports the S3 default `us-east-1`;
+  # Longhorn requires the @region component even when the backend ignores it.
+  backupTargetURL: {{ .backupTargetURL | quote }}
+  # Reconciled from Infisical (/minio/users/longhorn) by
+  # manifests/secrets/secret-longhorn-minio-secret.yaml
+  credentialSecret: {{ .credentialSecret | quote }}
+  pollInterval: {{ .pollInterval | quote }}
+{{- end }}

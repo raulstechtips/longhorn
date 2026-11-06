@@ -1,0 +1,15 @@
+{{- range .Values.storageClasses }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .name }}
+  labels:
+    {{- include "longhorn-wrapper.labels" $ | nindent 4 }}
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: {{ .reclaimPolicy }}
+volumeBindingMode: Immediate
+parameters:
+  {{- toYaml .parameters | nindent 2 }}
+{{- end }}

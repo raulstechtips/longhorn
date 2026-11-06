@@ -1,0 +1,271 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "infisical",
+    "minioSecret",
+    "ingressRoute",
+    "storageClasses",
+    "recurringJobs",
+    "volumeSnapshotClasses",
+    "backupTargets",
+    "longhorn"
+  ],
+  "properties": {
+    "infisical": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authRef",
+        "projectSlug",
+        "environmentSlug"
+      ],
+      "properties": {
+        "authRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "namespace"
+          ],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "namespace": {
+              "type": "string"
+            }
+          }
+        },
+        "projectSlug": {
+          "type": "string"
+        },
+        "environmentSlug": {
+          "type": "string"
+        }
+      }
+    },
+    "minioSecret": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "secretName",
+        "secretPath",
+        "recursive",
+        "refreshInterval",
+        "endpoint"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "secretName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "secretPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recursive": {
+          "type": "boolean"
+        },
+        "refreshInterval": {
+          "type": "string",
+          "minLength": 1
+        },
+        "endpoint": {
+          "type": "string"
+        }
+      }
+    },
+    "ingressRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "entryPoints",
+        "ingressClass",
+        "middlewares",
+        "host",
+        "tlsSecretName"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "entryPoints": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "ingressClass": {
+          "type": "string",
+          "minLength": 1
+        },
+        "middlewares": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "namespace"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "namespace": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "host": {
+          "type": "string"
+        },
+        "tlsSecretName": {
+          "type": "string"
+        }
+      }
+    },
+    "storageClasses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "reclaimPolicy",
+          "parameters"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reclaimPolicy": {
+            "enum": [
+              "Retain",
+              "Delete"
+            ]
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minProperties": 1
+          }
+        }
+      }
+    },
+    "recurringJobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "task",
+          "cron",
+          "retain",
+          "concurrency"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "task": {
+            "enum": [
+              "snapshot-cleanup"
+            ]
+          },
+          "cron": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retain": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "concurrency": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "volumeSnapshotClasses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "isDefault",
+          "deletionPolicy"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "deletionPolicy": {
+            "enum": [
+              "Retain",
+              "Delete"
+            ]
+          }
+        }
+      }
+    },
+    "backupTargets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "backupTargetURL",
+          "credentialSecret",
+          "pollInterval"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "backupTargetURL": {
+            "type": "string",
+            "minLength": 1
+          },
+          "credentialSecret": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pollInterval": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "longhorn": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+suite: Snapshot cleanup schedule
+templates: [templates/recurringjobs.yaml]
+tests:
+  - it: preserves the live cleanup job
+    asserts:
+      - isAPIVersion:
+          of: longhorn.io/v1beta1
+      - equal:
+          path: metadata.name
+          value: cleanup-snapshots
+      - equal:
+          path: spec
+          value: {task: snapshot-cleanup, cron: "0 3 * * *", retain: 15, concurrency: 3}
+  - it: allows jobs to be disabled
+    set:
+      recurringJobs: []
+    asserts:
+      - hasDocuments:
+          count: 0

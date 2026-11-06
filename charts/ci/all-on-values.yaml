@@ -1,0 +1,22 @@
+# Fake environment for CI. No secret values here.
+infisical:
+  authRef:
+    name: fake-auth
+    namespace: fake-system
+  projectSlug: fake-project
+  environmentSlug: fake-env
+minioSecret:
+  enabled: true
+  endpoint: https://s3.example.test
+ingressRoute:
+  enabled: true
+  host: longhorn.example.test
+  tlsSecretName: fake-tls
+  middlewares:
+    - name: fake-headers
+      namespace: default
+backupTargets:
+  - name: default
+    backupTargetURL: s3://fake-backup@us-east-1/
+    credentialSecret: minio-secret
+    pollInterval: 5m0s

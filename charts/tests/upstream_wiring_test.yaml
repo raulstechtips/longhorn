@@ -1,0 +1,66 @@
+suite: Upstream Longhorn wiring
+templates:
+  - charts/longhorn/templates/daemonset-sa.yaml
+  - charts/longhorn/templates/deployment-ui.yaml
+  - charts/longhorn/templates/default-setting.yaml
+  - charts/longhorn/templates/crds.yaml
+release:
+  name: longhorn
+  namespace: longhorn-system
+tests:
+  - it: preserves manager image and JSON command
+    template: charts/longhorn/templates/daemonset-sa.yaml
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.name
+          value: longhorn-manager
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: longhornio/longhorn-manager:v1.8.2
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: -j
+      - contains:
+          path: spec.template.spec.containers[0].command
+          content: daemon
+      - isNull:
+          path: spec.template.spec.containers[0].env[4]
+  - it: preserves UI image and one replica
+    template: charts/longhorn/templates/deployment-ui.yaml
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.name
+          value: longhorn-ui
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: longhornio/longhorn-ui:v1.8.2
+  - it: keeps the Service used by the wrapper route
+    template: charts/longhorn/templates/deployment-ui.yaml
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: metadata.name
+          value: longhorn-frontend
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+  - it: preserves startup settings
+    template: charts/longhorn/templates/default-setting.yaml
+    asserts:
+      - equal:
+          path: data["default-setting.yaml"]
+          value: |-
+            priority-class: longhorn-critical
+            disable-revision-counter: true
+            orphan-auto-deletion: true
+            log-level: info
+  - it: keeps the tracked CRDs rendered
+    template: charts/longhorn/templates/crds.yaml
+    asserts:
+      - hasDocuments:
+          count: 22
