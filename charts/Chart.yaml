@@ -2,7 +2,7 @@ apiVersion: v2
 name: longhorn
 description: "Longhorn upstream wrapper with storage, backup, secret sync and ingress resources."
 type: application
-version: 0.0.0
+version: 0.1.0-main-aaec2db-2
 appVersion: "1.8.2"
 dependencies:
   - name: longhorn
